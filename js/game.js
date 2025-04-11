@@ -465,6 +465,16 @@ class Game {
     const parameters = action.parameters || {};
     
     console.log(`Executing AI action: ${actionName}`, parameters);
+
+    // Validate that the action is currently available
+    if (!this.isActionAvailable(actionName, parameters)) {
+      console.warn(`Action ${actionName} is not currently available or valid`);
+      if (this.agent) {
+        this.agent.recordFailedAction(actionName, "This action is not available in the current turn state");
+        this.agent.addChatMessage(this.currentPlayer, `I tried to ${actionName}, but that action is not available right now.`);
+      }
+      return;
+    }
     
     switch (actionName) {
       case 'upgradeCity':
@@ -490,6 +500,57 @@ class Game {
         break;
       default:
         console.warn(`Unknown AI action: ${actionName}`);
+    }
+  }
+
+  // Helper to check if an action is actually available
+  isActionAvailable(actionName, parameters) {
+    // End turn is always available
+    if (actionName === 'endTurn') {
+      return true;
+    }
+    
+    // Get the current available actions for this player
+    const availableActions = this.agent ? 
+      this.agent.evaluateAvailableActions(this.currentPlayer) : 
+      {};
+      
+    // Check if the action type is in the available actions
+    if (!availableActions[actionName] || !Array.isArray(availableActions[actionName]) || availableActions[actionName].length === 0) {
+      console.warn(`Action type ${actionName} not available`);
+      return false;
+    }
+    
+    // For specific action types, validate parameters more carefully
+    switch (actionName) {
+      case 'foundCity':
+        // Check if the specific unit can found a city
+        const foundCityActions = availableActions.foundCity;
+        return foundCityActions.some(action => action.unitId === parameters.unitId);
+        
+      case 'upgradeCity':
+        // Check if the city can be upgraded
+        return availableActions.upgradeCity.some(action => action.cityId === parameters.cityId);
+        
+      case 'buyUnit':
+        // Check if can buy at this city
+        return availableActions.buyUnit.some(action => action.cityId === parameters.cityId);
+        
+      case 'moveUnit':
+        // Just check if unit can move (specific destination will be validated in move function)
+        return availableActions.moveUnit.some(action => action.unitId === parameters.unitId);
+        
+      case 'attackUnit':
+        // Check if unit can attack (specific target will be validated in attack function)
+        return availableActions.attackUnit.some(action => action.unitId === parameters.unitId);
+        
+      case 'conquerCity':
+        // Check if unit can conquer a city
+        return availableActions.conquerCity.some(action => action.unitId === parameters.unitId);
+        
+      default:
+        // Unknown action type
+        return false;
     }
   }
 
@@ -665,7 +726,6 @@ class Game {
     
     if (unit.canFoundCity()) {
       unit.foundCity(this);
-      console.log("Successfully founded a new city! Expanding your empire is a great strategy.");
       this.ui.render();
     } else {
       console.log("Couldn't found city. Remember that expanding your territory with multiple cities is a strong strategy!");

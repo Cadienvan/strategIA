@@ -570,7 +570,7 @@ Example responses:
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'qwen2.5',
+          model: 'gemma3:4b',
           prompt: prompt,
           stream: false
         })
