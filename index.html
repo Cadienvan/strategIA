@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StratAI</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="game-container">
+    <div class="game-header">
+      <h1>StratAI</h1>
+      <div class="game-controls" id="gameSetupControls">
+        <label for="mapSize">Map Size:</label>
+        <select id="mapSize">
+          <option value="10">10x10</option>
+          <option value="15">15x15</option>
+          <option value="20">20x20</option>
+          <option value="30">30x30</option>
+          <option value="40">40x40</option>
+          <option value="50">50x50</option>
+          <option value="100" selected>100x100</option>
+        </select>
+        
+        <label for="playerCount">Players:</label>
+        <select id="playerCount">
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="6" selected>6</option>
+          <option value="8">8</option>
+        </select>
+        
+        <div class="agent-mode-control">
+          <input type="checkbox" id="agentModeEnabled" name="agentModeEnabled">
+          <label for="agentModeEnabled">Agent Mode (AI controls players)</label>
+        </div>
+        
+        <button id="startGame">Start Game</button>
+      </div>
+      <div class="game-turn-controls" id="gameTurnControls" style="display: none;">
+        <div id="currentPlayerInfo"></div>
+        <button id="endTurn">End Turn</button>
+      </div>
+    </div>
+    
+    <div class="game-content">
+      <div class="game-board-container">
+        <canvas id="gameBoard"></canvas>
+        <div id="actionPanel" class="action-panel" style="display: none;">
+          <h3 id="actionTitle">Actions</h3>
+          <div id="actionButtons"></div>
+        </div>
+      </div>
+      
+      <div class="game-sidebar">
+        <div class="player-rankings">
+          <h3>Rankings</h3>
+          <ul id="playerRankings"></ul>
+        </div>
+        
+        <div class="game-info">
+          <h3>Game Info</h3>
+          <div id="gameInfo"></div>
+        </div>
+        
+        <!-- Added Agent Chat section -->
+        <div class="agent-chat" id="agentChatContainer">
+          <h3>Agent Chat</h3>
+          <div id="agentChat" class="chat-messages"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/utils.js"></script>
+  <script src="js/behaviors.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/city.js"></script>
+  <script src="js/unit.js"></script>
+  <script src="js/agent.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
